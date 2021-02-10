@@ -2,6 +2,16 @@
 
 API for the meeting service from Dogood
 
+- [Meeting api](#meeting-api)
+  - [Development](#development)
+    - [Building locally](#building-locally)
+    - [Branches](#branches)
+      - [Branch structure](#branch-structure)
+      - [Scenario: Develop a feature](#scenario-develop-a-feature)
+      - [Scenario: Make a release](#scenario-make-a-release)
+  - [Usage](#usage)
+    - [Availible requests](#availible-requests)
+
 ## Development
 
 ### Building locally
