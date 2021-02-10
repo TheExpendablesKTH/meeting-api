@@ -1,0 +1,695 @@
+{
+  "info": {
+    "name": "requests.paw",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Welcome",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "localhost:8080/",
+          "query": null,
+          "protocol": null,
+          "host": [
+            "localhost:8080/"
+          ],
+          "port": null,
+          "path": null
+        },
+        "description": "",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "disabled": false,
+            "description": null
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "disabled": false,
+          "raw": ""
+        },
+        "auth": null
+      },
+      "protocolProfileBehavior": {
+        "followRedirects": false,
+        "followOriginalHttpMethod": false,
+        "followAuthorizationHeader": false
+      },
+      "response": []
+    },
+    {
+      "name": "Authenticate",
+      "item": [
+        {
+          "name": "Authenticate Device",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/authenticate/device",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/authenticate/device"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"code\": \"SOME SUPER SECRET KEY ENTERED BY DOGOOD\",\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate User",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/authenticate/user",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/authenticate/user"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"device_token\": \"some-device-token\",\n  \"user_id\": 2,\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate Relative Init",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/authenticate/relative/init",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/authenticate/relative/init"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"phone\": \"+46......\",\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate Relative Validate",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/authenticate/relative/validate",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/authenticate/relative/validate"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"code\": \"ABC123\",\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate Admin",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/authenticate/admin",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/authenticate/admin"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": ""
+            },
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "username",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "password",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": null,
+      "response": []
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "localhost:8080/users",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/users"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": ""
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/users",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/users"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"firstname\": \"foo\",\n  \"lastname\": \"bar\"\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Delete user",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "localhost:8080/users/1",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/users/1"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"firstname\": \"foo\",\n  \"lastname\": \"bar\"\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "List relatives",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "localhost:8080/users/1/relatives",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/users/1/relatives"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"relative_id\": 3,\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Create relative",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/users/1/relatives",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/users/1/relatives"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"relative_id\": 3,\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Delete relative",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "localhost:8080/users/1/relatives/2",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/users/1/relatives/2"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": "{\n  \"firstname\": \"foo\",\n  \"lastname\": \"bar\"\n}"
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": null,
+      "response": []
+    },
+    {
+      "name": "Calls",
+      "item": [
+        {
+          "name": "List calls",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "localhost:8080/calls",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/calls"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": ""
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Create Call",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "localhost:8080/calls",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/calls"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": ""
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Relative connect to call",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "localhost:8080/calls/1",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/calls/1"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": ""
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        },
+        {
+          "name": "Terminate Call",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "localhost:8080/calls/1",
+              "query": null,
+              "protocol": null,
+              "host": [
+                "localhost:8080/calls/1"
+              ],
+              "port": null,
+              "path": null
+            },
+            "description": "",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": false,
+                "description": null
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer TOKEN",
+                "disabled": false,
+                "description": null
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "disabled": false,
+              "raw": ""
+            },
+            "auth": null
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false,
+            "followOriginalHttpMethod": false,
+            "followAuthorizationHeader": false
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": null,
+      "response": []
+    }
+  ]
+}
