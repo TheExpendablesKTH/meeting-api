@@ -7,7 +7,7 @@
     {
       "name": "Welcome",
       "request": {
-        "method": "POST",
+        "method": "GET",
         "url": {
           "raw": "localhost:8080/",
           "query": null,
@@ -30,7 +30,7 @@
         "body": {
           "mode": "raw",
           "disabled": false,
-          "raw": "{\n  \"code\": \"SOME SUPER SECRET KEY ENTERED BY DOGOOD\",\n}"
+          "raw": ""
         },
         "auth": null
       },
