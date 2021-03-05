@@ -11,7 +11,7 @@ API for the meeting service from Dogood
       - [Scenario: Make a release](#scenario-make-a-release)
   - [Usage](#usage)
     - [Availible requests](#availible-requests)
-
+  - [Deployment](#deployment)
 ## Development
 
 ### Building locally
@@ -91,3 +91,7 @@ $ curl -X "POST" "http://localhost:8080/calls" \
 ```
 
 > these examples use `jq` for readability
+
+## Deployment
+
+There is a simple deployment script `redeploy.sh` (that expects to run in a configured environment, this is not documented).
