@@ -22,6 +22,11 @@ public class UserController {
         user1.put("name", "some user");
         users.add(user1);
 
+        JSONObject user2 = new JSONObject();
+        user2.put("id", 2);
+        user2.put("name", "some other user");
+        users.add(user2);
+
         JSONObject response = new JSONObject();
         response.put("message", "");
         response.put("users", users);
