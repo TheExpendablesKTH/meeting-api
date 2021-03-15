@@ -9,6 +9,9 @@ API for the meeting service from Dogood
       - [Branch structure](#branch-structure)
       - [Scenario: Develop a feature](#scenario-develop-a-feature)
       - [Scenario: Make a release](#scenario-make-a-release)
+    - [Start a local database server for development](#start-a-local-database-server-for-development)
+      - [Using docker](#using-docker)
+        - [Load the schema](#load-the-schema)
   - [Usage](#usage)
     - [Availible requests](#availible-requests)
   - [Deployment](#deployment)
@@ -64,6 +67,42 @@ Make your commits, then open up a PR in github to merge your feature branch into
 #### Scenario: Make a release
 
 Open a PR to merge `develop` into a given release branch eg. `release-v1`. Then Merge that release branch into `master`. Tag the master branch with a version number eg. `v1.x.x`
+
+### Start a local database server for development
+
+#### Using docker
+
+Ensure docker is installed on the host. Then run the following
+
+```bash
+docker run --name dd1369 -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+```
+
+If the database has been stopped, start it with the following command
+
+```bash
+docker container start dd1369
+```
+
+You can connect to the database server, either using a gui or psql
+
+```bash
+psql -h 127.0.0.1 -p 5432 -U postgres
+```
+
+##### Load the schema
+
+Create the database inside of postgres
+
+```bash
+psql -h 127.0.0.1 -p 5432 -U postgres -c "CREATE DATABASE meetings;"
+```
+
+Then from the root of the repo, run
+
+```bash
+psql -h 127.0.0.1 -p 5432 -U postgres meetings < database/schema.sql
+```
 
 ## Usage
 
