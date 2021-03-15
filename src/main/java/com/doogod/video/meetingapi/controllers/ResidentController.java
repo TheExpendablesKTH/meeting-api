@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/residents")
 @CrossOrigin(origins = "*")
-public class UserController {
+public class ResidentController {
 
     @Autowired
     Jdbi jdbi;
@@ -50,15 +50,15 @@ public class UserController {
         return new ResponseEntity<ResidentModel>(newResident, HttpStatus.OK);
     }
 
-    @RequestMapping(path = "{userId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteUser(@PathVariable("userId") String userId) {
+    @RequestMapping(path = "{residentId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteUser(@PathVariable("residentId") String residentId) {
         JSONObject response = new JSONObject();
-        response.put("message", "user " + userId + " deleted");
+        response.put("message", "user " + residentId + " deleted");
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(path = "{userId}/relatives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> listRelatives(@PathVariable("userId") String userId) {
+    @RequestMapping(path = "{residentId}/relatives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> listRelatives(@PathVariable("residentId") String residentId) {
         List<JSONObject> users = new ArrayList<JSONObject>();
         JSONObject relative1 = new JSONObject();
         relative1.put("id", 1);
@@ -73,23 +73,23 @@ public class UserController {
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
     }
 
-    @RequestMapping(path = "{userId}/relatives", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createRelative(@PathVariable("userId") String userId) {
+    @RequestMapping(path = "{residentId}/relatives", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> createRelative(@PathVariable("residentId") String residentId) {
         JSONObject relative1 = new JSONObject();
         relative1.put("id", 2);
         relative1.put("name", "some user");
 
         JSONObject response = new JSONObject();
-        response.put("message", "relative created for user " + userId);
+        response.put("message", "relative created for user " + residentId);
         response.put("relative", relative1);
 
         return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "{userId}/relatives/{relativeId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteUser(@PathVariable("userId") String userId, @PathVariable("relativeId") String relativeId) {
+    @RequestMapping(path = "{residentId}/relatives/{relativeId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteUser(@PathVariable("residentId") String residentId, @PathVariable("relativeId") String relativeId) {
         JSONObject response = new JSONObject();
-        response.put("message", "relative for user " + userId + " with id " + relativeId + " deleted");
+        response.put("message", "relative for user " + residentId + " with id " + relativeId + " deleted");
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
     }
 }
