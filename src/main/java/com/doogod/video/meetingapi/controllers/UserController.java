@@ -1,6 +1,11 @@
 package com.doogod.video.meetingapi.controllers;
 
+
+import com.doogod.video.meetingapi.db.ResidentModel;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,37 +19,35 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class UserController {
 
+    @Autowired
+    Jdbi jdbi;
+
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> listUsers() {
-        List<JSONObject> users = new ArrayList<JSONObject>();
-        JSONObject user1 = new JSONObject();
-        user1.put("id", 1);
-        user1.put("name", "some user");
-        users.add(user1);
+    public ResponseEntity<List<ResidentModel>> listUsers() {
+        List<ResidentModel> residents = jdbi.withHandle(handle -> handle.createQuery("SELECT id, name FROM residents;")
+                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
+                .mapTo(ResidentModel.class)
+                .list()
+        );
 
-        JSONObject user2 = new JSONObject();
-        user2.put("id", 2);
-        user2.put("name", "some other user");
-        users.add(user2);
-
-        JSONObject response = new JSONObject();
-        response.put("message", "");
-        response.put("users", users);
-
-        return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+        return new ResponseEntity<List<ResidentModel>>(residents, HttpStatus.OK);
     }
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createUser() {
-        JSONObject user1 = new JSONObject();
-        user1.put("id", 2);
-        user1.put("name", "some user");
-
-        JSONObject response = new JSONObject();
-        response.put("message", "user created");
-        response.put("user", user1);
-
-        return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
+    @PostMapping(
+            value = "/postbody",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}
+            )
+    public ResponseEntity<ResidentModel> createUser(@RequestBody ResidentModel resident) {
+        var newResident = jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO residents(name) values (:name);")
+                .bind("name", resident.getName())
+                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
+                .executeAndReturnGeneratedKeys()
+                .mapTo(ResidentModel.class)
+                .one()
+        );
+        return new ResponseEntity<ResidentModel>(newResident, HttpStatus.OK);
     }
 
     @RequestMapping(path = "{userId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
