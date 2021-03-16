@@ -18,6 +18,11 @@ repositories {
 dependencies {
 	implementation 'org.json:json:20201115'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'com.h2database:h2'
+	implementation 'org.postgresql:postgresql'
+	implementation 'org.jdbi:jdbi3-spring4:3.9.1'
+	implementation 'org.jdbi:jdbi3-sqlobject:3.9.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
