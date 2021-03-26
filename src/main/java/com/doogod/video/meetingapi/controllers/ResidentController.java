@@ -52,8 +52,15 @@ public class ResidentController {
 
     @RequestMapping(path = "{residentId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteUser(@PathVariable("residentId") String residentId) {
+        var deletedResident = jdbi.withHandle(handle -> handle.createUpdate("DELETE FROM residents(name) WHERE id=:id")
+                .bind("id", residentId)
+                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
+                .executeAndReturnGeneratedKeys()
+                .mapTo(ResidentModel.class)
+                .one()
+        );
         JSONObject response = new JSONObject();
-        response.put("message", "user " + residentId + " deleted");
+        response.put("message", "resident \"" + deletedResident.getName() + "\" deleted");
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
     }
 
