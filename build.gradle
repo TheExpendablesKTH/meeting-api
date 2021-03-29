@@ -23,6 +23,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.jdbi:jdbi3-spring4:3.9.1'
 	implementation 'org.jdbi:jdbi3-sqlobject:3.9.1'
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-chime', version: '1.11.982'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
