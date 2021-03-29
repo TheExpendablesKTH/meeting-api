@@ -1,6 +1,11 @@
 package com.doogod.video.meetingapi.controllers;
 
+import com.doogod.video.meetingapi.chime.ChimeConnectionDetails;
+import com.doogod.video.meetingapi.chime.AWSChimeWrapper;
+import com.doogod.video.meetingapi.chime.SimpleJoin;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +18,12 @@ import java.util.List;
 @RequestMapping("/calls")
 @CrossOrigin(origins = "*")
 public class CallController {
+
+    @Autowired
+    private SimpleJoin simpleJoin;
+
+    @Value("${spring.tmpkey}")
+    private String tmpKey;
 
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> listCalls() {
@@ -68,5 +79,19 @@ public class CallController {
         JSONObject response = new JSONObject();
         response.put("message", "call was terminated");
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "tmp/{externalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ChimeConnectionDetails> tmpConnectToCall(
+            @PathVariable("externalId") String externalId,
+            @RequestHeader("Authorization") String auth
+    ) {
+        if (!tmpKey.equals(auth)) {
+            JSONObject response = new JSONObject();
+            response.put("message", "unauthorized");
+            return new ResponseEntity(response.toString(), HttpStatus.UNAUTHORIZED);
+        }
+        ChimeConnectionDetails details = simpleJoin.createMeetingIfItDoesNotExistAndAddAttendeeWithExternalId(externalId);
+        return new ResponseEntity<ChimeConnectionDetails>(details, HttpStatus.OK);
     }
 }
