@@ -15,7 +15,7 @@ public class WelcomeController {
     @RequestMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> index() {
         JSONObject response = new JSONObject();
-        response.put("message", "I am the api!");
+        response.put("message", "I am the api! I am also mocked");
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
     }
 
