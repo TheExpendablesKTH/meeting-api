@@ -1,6 +1,8 @@
 package com.doogod.video.meetingapi.db.models;
 
 import com.doogod.video.meetingapi.security.authentication.Identifiable;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.beans.ConstructorProperties;
@@ -24,12 +26,19 @@ public class Device implements Identifiable {
     @Override
     public Identity createIdentity() {
         TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         df.setTimeZone(tz);
         String now = df.format(new Date());
 
         String username = "device_created_at:" + now;
         return new Identity(null, "device", username, null, null, this.id);
+    }
+
+    @JsonIgnore
+    public Permissions getPermissions() {
+        var permissions = new Permissions();
+        permissions.add(Permissions.CAN_CREATE_ADMINS);
+        return permissions;
     }
 
     public Integer getId() {

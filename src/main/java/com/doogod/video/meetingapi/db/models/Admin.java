@@ -1,6 +1,7 @@
 package com.doogod.video.meetingapi.db.models;
 
 import com.doogod.video.meetingapi.security.authentication.Identifiable;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.beans.ConstructorProperties;
@@ -23,6 +24,14 @@ public class Admin implements Identifiable {
     @JsonIgnore
     public Identity createIdentity() {
         return new Identity(null, "admin", this.username, this.password, this.id, null);
+    }
+
+    @JsonIgnore
+    public Permissions getPermissions() {
+        var permissions = new Permissions();
+        permissions.add(Permissions.CAN_LIST_RESIDENTS);
+        permissions.add(Permissions.CAN_CREATE_RESIDENTS);
+        return permissions;
     }
 
     public Integer getId() {
