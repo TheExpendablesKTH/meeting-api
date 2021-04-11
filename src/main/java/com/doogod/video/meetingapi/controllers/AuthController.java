@@ -1,8 +1,12 @@
 package com.doogod.video.meetingapi.controllers;
 
+import com.doogod.video.meetingapi.db.exceptions.DatabaseException;
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
 import com.doogod.video.meetingapi.db.models.Admin;
+import com.doogod.video.meetingapi.db.models.Device;
 import com.doogod.video.meetingapi.db.services.AdminService;
+import com.doogod.video.meetingapi.db.services.DeviceService;
+import com.doogod.video.meetingapi.db.services.IdentityService;
 import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
 import org.jdbi.v3.core.Jdbi;
 import org.json.JSONObject;
@@ -24,18 +28,36 @@ public class AuthController {
     AdminService adminService;
 
     @Autowired
+    DeviceService deviceService;
+
+    @Autowired
+    IdentityService identityService;
+
+    @Autowired
     AuthenticationService authService;
 
-    @RequestMapping(path = "/device", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> device() {
-        JSONObject device = new JSONObject();
-        device.put("token", "some-device-token");
+    @RequestMapping(path = "device", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            value = "/postbody",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}
+    )
+    public ResponseEntity<String> device(@RequestBody Device device) {
+        try {
+            deviceService.insert(device);
+            identityService.insert(device.getIdentity());
 
-        JSONObject response = new JSONObject();
-        response.put("message", "device authenticated");
-        response.put("device", device);
+            String token = authService.login(device);
 
-        return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+            JSONObject response = new JSONObject();
+            response.put("token", token);
+            return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+        } catch (DatabaseException e) {
+            JSONObject response = new JSONObject();
+            response.put("message", "unauthorized");
+
+            return new ResponseEntity(response.toString(), HttpStatus.FORBIDDEN);
+        }
     }
 
     @RequestMapping(path = "/user", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,7 +101,7 @@ public class AuthController {
     public ResponseEntity<String> admin(@RequestBody Admin admin) {
         try {
             JSONObject response = new JSONObject();
-            response.put("token", authService.login(admin.getIdentity()));
+            response.put("token", authService.login(admin));
             return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
         } catch (IdentityNotFoundException e) {
             JSONObject response = new JSONObject();

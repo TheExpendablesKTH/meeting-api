@@ -2,6 +2,7 @@ package com.doogod.video.meetingapi.db.services;
 
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
 import com.doogod.video.meetingapi.db.exceptions.DatabaseException;
+import com.doogod.video.meetingapi.db.exceptions.UnkownIdentityTypeException;
 import com.doogod.video.meetingapi.db.exceptions.UsernameNotUniqueException;
 import com.doogod.video.meetingapi.db.models.Identity;
 import org.jdbi.v3.core.Jdbi;
@@ -21,20 +22,51 @@ public class IdentityService {
     BCryptPasswordEncoder bcrypt;
 
     public void insert(Identity identity) throws DatabaseException {
+        switch (identity.getType()) {
+            case "admin":
+                insertAdmin(identity);
+                break;
+            case "device":
+                insertDevice(identity);
+                break;
+            default:
+                throw new UnkownIdentityTypeException();
+        }
+    }
+
+    private void insertAdmin(Identity identity) throws DatabaseException {
         jdbi.withHandle(handle -> {
             try {
-                return handle.createUpdate("INSERT INTO identities(username, password, admin_id) values (:username, :password, :admin_id);")
-                    .bind("username", identity.getUsername())
-                    .bind("password", bcrypt.encode(identity.getPassword()))
-                    .bind("admin_id", identity.getAdminId())
-                    .registerRowMapper(ConstructorMapper.factory(Identity.class))
-                    .executeAndReturnGeneratedKeys()
-                    .mapTo(Identity.class)
-                    .one();
+                return handle.createUpdate("INSERT INTO identities(type, username, password, admin_id) values (:type, :username, :password, :admin_id);")
+                        .bind("type", identity.getType())
+                        .bind("username", identity.getUsername())
+                        .bind("password", bcrypt.encode(identity.getPassword()))
+                        .bind("admin_id", identity.getAdminId())
+                        .registerRowMapper(ConstructorMapper.factory(Identity.class))
+                        .executeAndReturnGeneratedKeys()
+                        .mapTo(Identity.class)
+                        .one();
             } catch (UnableToExecuteStatementException e){
                 if (e.getMessage().contains("unique")) {
                     throw new UsernameNotUniqueException();
                 }
+                throw new DatabaseException();
+            }
+        });
+    }
+
+    private void insertDevice(Identity identity) throws DatabaseException {
+        jdbi.withHandle(handle -> {
+            try {
+                return handle.createUpdate("INSERT INTO identities(type, username, device_id) values (:type, :username, :device_id);")
+                        .bind("type", identity.getType())
+                        .bind("username", identity.getUsername())
+                        .bind("device_id", identity.getDeviceId())
+                        .registerRowMapper(ConstructorMapper.factory(Identity.class))
+                        .executeAndReturnGeneratedKeys()
+                        .mapTo(Identity.class)
+                        .one();
+            } catch (UnableToExecuteStatementException e){
                 throw new DatabaseException();
             }
         });

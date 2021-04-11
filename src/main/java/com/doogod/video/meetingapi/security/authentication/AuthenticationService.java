@@ -1,8 +1,12 @@
 package com.doogod.video.meetingapi.security.authentication;
 
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
+import com.doogod.video.meetingapi.db.exceptions.ResidencyNotFoundException;
+import com.doogod.video.meetingapi.db.models.Admin;
+import com.doogod.video.meetingapi.db.models.Device;
 import com.doogod.video.meetingapi.db.models.Identity;
 import com.doogod.video.meetingapi.db.services.IdentityService;
+import com.doogod.video.meetingapi.db.services.ResidencyService;
 import com.doogod.video.meetingapi.security.token.TokenService;
 import com.google.common.collect.ImmutableMap;
 import lombok.NonNull;
@@ -25,23 +29,37 @@ public final class AuthenticationService {
     IdentityService identityService;
 
     @NonNull
+    ResidencyService residencyService;
+
+    @NonNull
     BCryptPasswordEncoder bcrypt;
 
-    public AuthenticationService(TokenService tokens, IdentityService identityService, BCryptPasswordEncoder bcrypt) {
+    public AuthenticationService(TokenService tokens, IdentityService identityService, ResidencyService residencyService, BCryptPasswordEncoder bcrypt) {
         this.tokenService = tokens;
         this.identityService = identityService;
+        this.residencyService = residencyService;
         this.bcrypt = bcrypt;
     }
 
-    public String login(Identity identity) throws IdentityNotFoundException {
-        Identity fromDB = identityService.findByUsername(identity.getUsername());
-        if (bcrypt.matches(identity.getPassword(), fromDB.getPassword())) {
+    public String login(Admin admin) throws IdentityNotFoundException {
+        Identity fromDB = identityService.findByUsername(admin.getIdentity().getUsername());
+        if (bcrypt.matches(admin.getIdentity().getPassword(), fromDB.getPassword())) {
             return tokenService.permanent(ImmutableMap.of("username", fromDB.getUsername()));
         }
 
         // we shouldn't distinct between a password failure and identity not found,
         // to protect users privacy and safety from brute forcing
         throw new IdentityNotFoundException();
+    }
+
+    public String login(Device device) throws IdentityNotFoundException {
+        try {
+            residencyService.findByDevicePassphrase(device.getPassphrase());
+        } catch (ResidencyNotFoundException e) {
+            throw new IdentityNotFoundException();
+        }
+
+        return tokenService.permanent(ImmutableMap.of("username", device.getIdentity().getUsername()));
     }
 
     public Identity findByToken(String token) throws IdentityNotFoundException {
