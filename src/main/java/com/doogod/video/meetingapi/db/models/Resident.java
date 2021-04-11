@@ -10,11 +10,13 @@ import java.beans.ConstructorProperties;
 public class Resident {
     public String name;
     public int id;
+    public Integer residencyId;
 
-    @ConstructorProperties({"id", "name"})
-    public Resident(int id, String name) {
+    @ConstructorProperties({"id", "name", "residency_id"})
+    public Resident(int id, String name, Integer residencyId) {
         this.id = id;
         this.name = name;
+        this.residencyId = residencyId;
     }
 
     public String getName() {
@@ -31,5 +33,13 @@ public class Resident {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getResidencyId() {
+        return residencyId;
+    }
+
+    public void setResidencyId(Integer residencyId) {
+        this.residencyId = residencyId;
     }
 }
