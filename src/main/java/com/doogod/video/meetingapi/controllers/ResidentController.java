@@ -1,7 +1,7 @@
 package com.doogod.video.meetingapi.controllers;
 
 
-import com.doogod.video.meetingapi.db.ResidentModel;
+import com.doogod.video.meetingapi.db.models.Resident;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.json.JSONObject;
@@ -23,14 +23,14 @@ public class ResidentController {
     Jdbi jdbi;
 
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ResidentModel>> listUsers() {
-        List<ResidentModel> residents = jdbi.withHandle(handle -> handle.createQuery("SELECT id, name FROM residents;")
-                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
-                .mapTo(ResidentModel.class)
+    public ResponseEntity<List<Resident>> listUsers() {
+        List<Resident> residents = jdbi.withHandle(handle -> handle.createQuery("SELECT id, name FROM residents;")
+                .registerRowMapper(ConstructorMapper.factory(Resident.class))
+                .mapTo(Resident.class)
                 .list()
         );
 
-        return new ResponseEntity<List<ResidentModel>>(residents, HttpStatus.OK);
+        return new ResponseEntity<List<Resident>>(residents, HttpStatus.OK);
     }
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,15 +39,15 @@ public class ResidentController {
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}
             )
-    public ResponseEntity<ResidentModel> createUser(@RequestBody ResidentModel resident) {
+    public ResponseEntity<Resident> createUser(@RequestBody Resident resident) {
         var newResident = jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO residents(name) values (:name);")
                 .bind("name", resident.getName())
-                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
+                .registerRowMapper(ConstructorMapper.factory(Resident.class))
                 .executeAndReturnGeneratedKeys()
-                .mapTo(ResidentModel.class)
+                .mapTo(Resident.class)
                 .one()
         );
-        return new ResponseEntity<ResidentModel>(newResident, HttpStatus.OK);
+        return new ResponseEntity<Resident>(newResident, HttpStatus.OK);
     }
 
     @RequestMapping(path = "{residentId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
