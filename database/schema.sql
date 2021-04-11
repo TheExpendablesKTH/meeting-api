@@ -55,6 +55,40 @@ ALTER SEQUENCE public.admins_id_seq OWNED BY public.admins.id;
 
 
 --
+-- Name: devices; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.devices (
+    id integer NOT NULL,
+    residency_id integer NOT NULL
+);
+
+
+ALTER TABLE public.devices OWNER TO postgres;
+
+--
+-- Name: devices_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.devices_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.devices_id_seq OWNER TO postgres;
+
+--
+-- Name: devices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.devices_id_seq OWNED BY public.devices.id;
+
+
+--
 -- Name: identities_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -74,13 +108,50 @@ ALTER TABLE public.identities_id_seq OWNER TO postgres;
 
 CREATE TABLE public.identities (
     id integer DEFAULT nextval('public.identities_id_seq'::regclass) NOT NULL,
+    type character varying NOT NULL,
     username character varying NOT NULL,
-    password character varying NOT NULL,
-    admin_id integer
+    password character varying,
+    admin_id integer,
+    device_id integer
 );
 
 
 ALTER TABLE public.identities OWNER TO postgres;
+
+--
+-- Name: residencies; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.residencies (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    device_passphrase character varying NOT NULL
+);
+
+
+ALTER TABLE public.residencies OWNER TO postgres;
+
+--
+-- Name: residencies_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.residencies_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.residencies_id_seq OWNER TO postgres;
+
+--
+-- Name: residencies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.residencies_id_seq OWNED BY public.residencies.id;
+
 
 --
 -- Name: residents_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -102,7 +173,8 @@ ALTER TABLE public.residents_id_seq OWNER TO postgres;
 
 CREATE TABLE public.residents (
     id integer DEFAULT nextval('public.residents_id_seq'::regclass) NOT NULL,
-    name character varying NOT NULL
+    name character varying NOT NULL,
+    residency_id integer NOT NULL
 );
 
 
@@ -116,6 +188,20 @@ ALTER TABLE ONLY public.admins ALTER COLUMN id SET DEFAULT nextval('public.admin
 
 
 --
+-- Name: devices id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.devices ALTER COLUMN id SET DEFAULT nextval('public.devices_id_seq'::regclass);
+
+
+--
+-- Name: residencies id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.residencies ALTER COLUMN id SET DEFAULT nextval('public.residencies_id_seq'::regclass);
+
+
+--
 -- Name: admins admins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -124,11 +210,27 @@ ALTER TABLE ONLY public.admins
 
 
 --
+-- Name: devices devices_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.devices
+    ADD CONSTRAINT devices_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: identities identities_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: residencies residencies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.residencies
+    ADD CONSTRAINT residencies_pkey PRIMARY KEY (id);
 
 
 --
@@ -147,11 +249,42 @@ CREATE UNIQUE INDEX identities_username_unique ON public.identities USING btree 
 
 
 --
+-- Name: residencies_passphrase_unique; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX residencies_passphrase_unique ON public.residencies USING btree (device_passphrase);
+
+
+--
+-- Name: devices devices_residency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.devices
+    ADD CONSTRAINT devices_residency_id_fkey FOREIGN KEY (residency_id) REFERENCES public.residencies(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: identities identities_admin_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.admins(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: identities identities_device_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.identities
+    ADD CONSTRAINT identities_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: residents residents_residency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.residents
+    ADD CONSTRAINT residents_residency_id_fkey FOREIGN KEY (residency_id) REFERENCES public.residencies(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
