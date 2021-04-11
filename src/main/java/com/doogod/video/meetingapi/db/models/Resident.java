@@ -1,4 +1,4 @@
-package com.doogod.video.meetingapi.db;
+package com.doogod.video.meetingapi.db.models;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializable;
@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 import java.beans.ConstructorProperties;
 
-public class ResidentModel {
+public class Resident {
     public String name;
     public int id;
 
     @ConstructorProperties({"id", "name"})
-    public ResidentModel(int id, String name) {
+    public Resident(int id, String name) {
         this.id = id;
         this.name = name;
     }
