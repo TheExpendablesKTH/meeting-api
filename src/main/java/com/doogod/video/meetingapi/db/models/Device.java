@@ -31,13 +31,15 @@ public class Device implements Identifiable {
         String now = df.format(new Date());
 
         String username = "device_created_at:" + now;
-        return new Identity(null, "device", this.residencyId, username, null, null, this.id);
+        return new Identity(null, "device", this.residencyId, username, null, null, this.id, null);
     }
 
     @JsonIgnore
     public Permissions getPermissions() {
         var permissions = new Permissions();
         permissions.add(Permissions.CAN_CREATE_ADMINS);
+        permissions.add(Permissions.CAN_LOGIN_ADMINS);
+        permissions.add(Permissions.CAN_LOGIN_RESIDENTS);
         return permissions;
     }
 

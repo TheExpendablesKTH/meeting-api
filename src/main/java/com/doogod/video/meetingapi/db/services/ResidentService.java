@@ -1,5 +1,8 @@
 package com.doogod.video.meetingapi.db.services;
 
+import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
+import com.doogod.video.meetingapi.db.exceptions.ResidentNotFoundException;
+import com.doogod.video.meetingapi.db.models.Identity;
 import com.doogod.video.meetingapi.db.models.Resident;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
@@ -32,6 +35,19 @@ public class ResidentService {
                 .list()
         );
         return residents;
+    }
+
+    public Resident findById(Integer id) throws ResidentNotFoundException {
+        try {
+            return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM residents WHERE id = :id;")
+                    .bind("id", id)
+                    .registerRowMapper(ConstructorMapper.factory(Resident.class))
+                    .mapTo(Resident.class)
+                    .one()
+            );
+        } catch (IllegalStateException e) {
+            throw new ResidentNotFoundException();
+        }
     }
 
     public List<Resident> findByResidencyId(Integer residencyId) {

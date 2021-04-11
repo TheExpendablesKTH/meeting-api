@@ -28,9 +28,10 @@ public class Identity implements UserDetails {
     private String password;
     private Integer adminId;
     private Integer deviceId;
+    private Integer residentId;
 
     @JsonCreator
-    public Identity(Integer id, String type, Integer residencyId, String username, String password, Integer adminId, Integer deviceId) {
+    public Identity(Integer id, String type, Integer residencyId, String username, String password, Integer adminId, Integer deviceId, Integer residentId) {
         super();
         this.id = id;
         this.type = type;
@@ -39,6 +40,7 @@ public class Identity implements UserDetails {
         this.password = password;
         this.adminId = adminId;
         this.deviceId = deviceId;
+        this.residentId = residentId;
     }
 
     @JSONPropertyIgnore
@@ -86,6 +88,12 @@ public class Identity implements UserDetails {
     @JsonIgnore
     public Integer getDeviceId() {
         return deviceId;
+    }
+
+    @JSONPropertyIgnore
+    @JsonIgnore
+    public Integer getResidentId() {
+        return residentId;
     }
 
     @JSONPropertyIgnore

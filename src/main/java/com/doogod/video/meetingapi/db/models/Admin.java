@@ -27,7 +27,7 @@ public class Admin implements Identifiable {
 
     @JsonIgnore
     public Identity createIdentity() {
-        return new Identity(null, "admin", this.residencyId, this.username, this.password, this.id, null);
+        return new Identity(null, "admin", this.residencyId, this.username, this.password, this.id, null, null);
     }
 
     @JsonIgnore

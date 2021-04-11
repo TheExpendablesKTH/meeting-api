@@ -4,10 +4,13 @@ import com.doogod.video.meetingapi.db.exceptions.DatabaseException;
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
 import com.doogod.video.meetingapi.db.models.Admin;
 import com.doogod.video.meetingapi.db.models.Device;
+import com.doogod.video.meetingapi.db.models.Resident;
 import com.doogod.video.meetingapi.db.services.AdminService;
 import com.doogod.video.meetingapi.db.services.DeviceService;
 import com.doogod.video.meetingapi.db.services.IdentityService;
+import com.doogod.video.meetingapi.db.services.ResidentService;
 import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import org.jdbi.v3.core.Jdbi;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +34,15 @@ public class AuthController {
     DeviceService deviceService;
 
     @Autowired
+    ResidentService residentService;
+
+    @Autowired
     IdentityService identityService;
 
     @Autowired
     AuthenticationService authService;
+
+    Permissions permissions;
 
     @RequestMapping(path = "device", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(
@@ -56,20 +64,38 @@ public class AuthController {
             JSONObject response = new JSONObject();
             response.put("message", "unauthorized");
 
-            return new ResponseEntity(response.toString(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity(response.toString(), HttpStatus.UNAUTHORIZED);
         }
     }
 
-    @RequestMapping(path = "/user", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> user() {
-        JSONObject auth = new JSONObject();
-        auth.put("token", "some-auth-token");
+    @RequestMapping(path = "/resident", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            value = "/postbody",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}
+    )
+    public ResponseEntity<String> resident(@RequestBody Resident resident, @RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_LOGIN_RESIDENTS)) {
+            return permissions.denied();
+        }
 
-        JSONObject response = new JSONObject();
-        response.put("message", "device authenticated");
-        response.put("auth", auth);
+        try {
+            JSONObject response = new JSONObject();
+            Resident fromDB = residentService.findById(resident.getId());
+            identityService.insert(fromDB.createIdentity());
+            response.put("token", authService.login(resident));
+            return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+        } catch (IdentityNotFoundException e) {
+            JSONObject response = new JSONObject();
+            response.put("message", e.getClass().getSimpleName());
+            return new ResponseEntity(response.toString(), HttpStatus.UNAUTHORIZED);
+        } catch (DatabaseException e) {
+            JSONObject response = new JSONObject();
+            response.put("message", "unauthorized");
 
-        return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+            return new ResponseEntity(response.toString(), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @RequestMapping(path = "/relative/init", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -98,7 +124,12 @@ public class AuthController {
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
-    public ResponseEntity<String> admin(@RequestBody Admin admin) {
+    public ResponseEntity<String> admin(@RequestBody Admin admin, @RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_LOGIN_ADMINS)) {
+            return permissions.denied();
+        }
+
         try {
             JSONObject response = new JSONObject();
             response.put("token", authService.login(admin));
@@ -106,7 +137,7 @@ public class AuthController {
         } catch (IdentityNotFoundException e) {
             JSONObject response = new JSONObject();
             response.put("message", e.getClass().getSimpleName());
-            return new ResponseEntity(response.toString(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity(response.toString(), HttpStatus.UNAUTHORIZED);
         }
     }
 }

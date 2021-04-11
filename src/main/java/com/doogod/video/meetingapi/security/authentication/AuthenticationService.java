@@ -2,14 +2,16 @@ package com.doogod.video.meetingapi.security.authentication;
 
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
 import com.doogod.video.meetingapi.db.exceptions.ResidencyNotFoundException;
+import com.doogod.video.meetingapi.db.exceptions.ResidentNotFoundException;
 import com.doogod.video.meetingapi.db.models.Admin;
 import com.doogod.video.meetingapi.db.models.Device;
 import com.doogod.video.meetingapi.db.models.Identity;
+import com.doogod.video.meetingapi.db.models.Resident;
 import com.doogod.video.meetingapi.db.services.IdentityService;
 import com.doogod.video.meetingapi.db.services.ResidencyService;
+import com.doogod.video.meetingapi.db.services.ResidentService;
 import com.doogod.video.meetingapi.security.permissions.Permissions;
 import com.doogod.video.meetingapi.security.token.TokenService;
-import com.google.common.collect.ImmutableMap;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,12 +35,22 @@ public final class AuthenticationService {
     ResidencyService residencyService;
 
     @NonNull
+    ResidentService residentService;
+
+    @NonNull
     BCryptPasswordEncoder bcrypt;
 
-    public AuthenticationService(TokenService tokens, IdentityService identityService, ResidencyService residencyService, BCryptPasswordEncoder bcrypt) {
+    public AuthenticationService(
+            TokenService tokens,
+            IdentityService identityService,
+            ResidencyService residencyService,
+            ResidentService residentService,
+            BCryptPasswordEncoder bcrypt
+    ) {
         this.tokenService = tokens;
         this.identityService = identityService;
         this.residencyService = residencyService;
+        this.residentService = residentService;
         this.bcrypt = bcrypt;
     }
 
@@ -61,6 +73,16 @@ public final class AuthenticationService {
         }
 
         return tokenService.permanent(device);
+    }
+
+    public String login(Resident resident) throws IdentityNotFoundException {
+        try {
+            System.out.println(resident.getId());
+            residentService.findById(resident.getId());
+        } catch (ResidentNotFoundException e) {
+            throw new IdentityNotFoundException();
+        }
+        return tokenService.permanent(resident);
     }
 
     public Identity findByToken(String token) throws IdentityNotFoundException {

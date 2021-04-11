@@ -29,6 +29,9 @@ public class IdentityService {
             case "device":
                 insertDevice(identity);
                 break;
+            case "resident":
+                insertResident(identity);
+                break;
             default:
                 throw new UnkownIdentityTypeException();
         }
@@ -63,6 +66,24 @@ public class IdentityService {
                         .bind("type", identity.getType())
                         .bind("username", identity.getUsername())
                         .bind("device_id", identity.getDeviceId())
+                        .bind("residency_id", identity.getResidencyId())
+                        .registerRowMapper(ConstructorMapper.factory(Identity.class))
+                        .executeAndReturnGeneratedKeys()
+                        .mapTo(Identity.class)
+                        .one();
+            } catch (UnableToExecuteStatementException e){
+                throw new DatabaseException();
+            }
+        });
+    }
+
+    private void insertResident(Identity identity) throws DatabaseException {
+        jdbi.withHandle(handle -> {
+            try {
+                return handle.createUpdate("INSERT INTO identities(type, username, resident_id, residency_id) values (:type, :username, :resident_id, :residency_id);")
+                        .bind("type", identity.getType())
+                        .bind("username", identity.getUsername())
+                        .bind("resident_id", identity.getResidentId())
                         .bind("residency_id", identity.getResidencyId())
                         .registerRowMapper(ConstructorMapper.factory(Identity.class))
                         .executeAndReturnGeneratedKeys()
