@@ -14,6 +14,17 @@ API for the meeting service from Dogood
         - [Load the schema](#load-the-schema)
   - [Usage](#usage)
     - [Availible requests](#availible-requests)
+    - [Full list](#full-list)
+      - [Authentication](#authentication)
+        - [Authenticate a device](#authenticate-a-device)
+        - [Get token for an admin](#get-token-for-an-admin)
+        - [Get token for a resident](#get-token-for-a-resident)
+        - [Check caller identity (useful for debug)](#check-caller-identity-useful-for-debug)
+      - [Creating stuff](#creating-stuff)
+        - [Create an admin account](#create-an-admin-account)
+        - [Create a resident](#create-a-resident)
+      - [List stuff](#list-stuff)
+        - [List residents](#list-residents)
   - [Deployment](#deployment)
 ## Development
 
@@ -130,6 +141,90 @@ $ curl -X "POST" "http://localhost:8080/calls" \
 ```
 
 > these examples use `jq` for readability
+
+### Full list
+
+#### Authentication
+##### Authenticate a device
+
+```bash
+DEVICE_TOKEN=$(curl -X "POST" "http://localhost:8080/authenticate/device" \
+     -H 'Content-Type: application/json' \
+     -d $'{
+  "passphrase": "hemlis"
+}' | jq -r '.token')
+echo "$DEVICE_TOKEN"
+```
+
+##### Get token for an admin
+
+```bash
+ADMIN_TOKEN=$(curl -X "POST" "http://localhost:8080/authenticate/admin" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $DEVICE_TOKEN" \
+     -d $'{
+  "username": "foo",
+  "password": "bar"
+}' | jq -r '.token')
+echo "$ADMIN_TOKEN"
+```
+
+##### Get token for a resident
+
+```bash
+RESIDENT_TOKEN=$(curl -X "POST" "http://localhost:8080/authenticate/resident" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $DEVICE_TOKEN" \
+     -d $"{
+  \"id\": $RESIDENT_ID
+}" | jq -r '.token')
+echo "$RESIDENT_TOKEN"
+```
+
+##### Check caller identity (useful for debug)
+
+```bash
+curl "http://localhost:8080/me" \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer some-token' | jq
+```
+
+#### Creating stuff
+
+##### Create an admin account
+
+```bash
+curl -X "POST" "http://localhost:8080/admin" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $DEVICE_TOKEN" \
+     -d $'{
+  "name": "someone",
+  "username": "foo",
+  "password": "bar"
+}' | jq
+```
+
+##### Create a resident
+
+```bash
+RESIDENT_ID=$(curl -X "POST" "http://localhost:8080/residents" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $ADMIN_TOKEN" \
+     -d $'{
+  "name": "cool person"
+}' | jq -r '.id')
+echo "$RESIDENT_ID"
+```
+
+#### List stuff
+
+##### List residents
+
+```bash
+curl "http://localhost:8080/residents" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: $ADMIN_TOKEN" | jq
+```
 
 ## Deployment
 
