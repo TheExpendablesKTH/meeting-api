@@ -22,7 +22,7 @@ public class Admin implements Identifiable {
 
     @JsonIgnore
     public Identity getIdentity() {
-        return new Identity(null, this.username, this.password, this.id);
+        return new Identity(null, "admin", this.username, this.password, this.id, null);
     }
 
     public Integer getId() {
