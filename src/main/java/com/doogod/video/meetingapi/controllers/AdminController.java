@@ -6,6 +6,8 @@ import com.doogod.video.meetingapi.db.exceptions.UsernameNotUniqueException;
 import com.doogod.video.meetingapi.db.models.Admin;
 import com.doogod.video.meetingapi.db.services.AdminService;
 import com.doogod.video.meetingapi.db.services.IdentityService;
+import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import org.jdbi.v3.core.Jdbi;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +30,23 @@ public class AdminController {
     @Autowired
     AdminService adminService;
 
+    @Autowired
+    AuthenticationService authService;
+
+    Permissions permissions;
+
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(
             value = "/postbody",
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
-    public ResponseEntity<Admin> createAdmin(@RequestBody Admin admin) {
+    public ResponseEntity<Admin> createAdmin(@RequestBody Admin admin, @RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_CREATE_ADMINS)) {
+            return permissions.denied();
+        }
+
         adminService.insert(admin);
 
         try {

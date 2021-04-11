@@ -2,6 +2,8 @@ package com.doogod.video.meetingapi.controllers;
 
 
 import com.doogod.video.meetingapi.db.models.Resident;
+import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.json.JSONObject;
@@ -22,8 +24,18 @@ public class ResidentController {
     @Autowired
     Jdbi jdbi;
 
+    @Autowired
+    AuthenticationService authService;
+
+    Permissions permissions;
+
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Resident>> listUsers() {
+    public ResponseEntity<List<Resident>> listResidents(@RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_LIST_RESIDENTS)) {
+            return permissions.denied();
+        }
+
         List<Resident> residents = jdbi.withHandle(handle -> handle.createQuery("SELECT id, name FROM residents;")
                 .registerRowMapper(ConstructorMapper.factory(Resident.class))
                 .mapTo(Resident.class)
@@ -39,7 +51,12 @@ public class ResidentController {
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}
             )
-    public ResponseEntity<Resident> createUser(@RequestBody Resident resident) {
+    public ResponseEntity<Resident> createResident(@RequestBody Resident resident, @RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_CREATE_RESIDENTS)) {
+            return permissions.denied();
+        }
+
         var newResident = jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO residents(name) values (:name);")
                 .bind("name", resident.getName())
                 .registerRowMapper(ConstructorMapper.factory(Resident.class))
