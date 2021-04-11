@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
+import org.json.JSONPropertyIgnore;
+import org.json.JSONPropertyName;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -37,6 +39,7 @@ public class Identity implements UserDetails {
         this.deviceId = deviceId;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
@@ -47,6 +50,7 @@ public class Identity implements UserDetails {
         return type;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     @Override
     public String getPassword() {
@@ -59,38 +63,45 @@ public class Identity implements UserDetails {
     }
 
     @JsonProperty("identity_id")
+    @JSONPropertyName("identity_id")
     public Integer getIdentityId() {
         return id;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     public Integer getAdminId() {
         return adminId;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     public Integer getDeviceId() {
         return deviceId;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JSONPropertyIgnore
     @JsonIgnore
     @Override
     public boolean isEnabled() {
