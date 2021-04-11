@@ -22,7 +22,7 @@ public class Device implements Identifiable {
     }
 
     @Override
-    public Identity getIdentity() {
+    public Identity createIdentity() {
         TimeZone tz = TimeZone.getTimeZone("UTC");
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         df.setTimeZone(tz);

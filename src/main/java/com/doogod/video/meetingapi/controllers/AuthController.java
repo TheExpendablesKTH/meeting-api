@@ -45,7 +45,7 @@ public class AuthController {
     public ResponseEntity<String> device(@RequestBody Device device) {
         try {
             deviceService.insert(device);
-            identityService.insert(device.getIdentity());
+            identityService.insert(device.createIdentity());
 
             String token = authService.login(device);
 

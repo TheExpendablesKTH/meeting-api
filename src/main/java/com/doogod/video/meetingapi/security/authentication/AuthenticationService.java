@@ -42,8 +42,8 @@ public final class AuthenticationService {
     }
 
     public String login(Admin admin) throws IdentityNotFoundException {
-        Identity fromDB = identityService.findByUsername(admin.getIdentity().getUsername());
-        if (bcrypt.matches(admin.getIdentity().getPassword(), fromDB.getPassword())) {
+        Identity fromDB = identityService.findByUsername(admin.createIdentity().getUsername());
+        if (bcrypt.matches(admin.createIdentity().getPassword(), fromDB.getPassword())) {
             return tokenService.permanent(ImmutableMap.of("username", fromDB.getUsername()));
         }
 
@@ -59,7 +59,7 @@ public final class AuthenticationService {
             throw new IdentityNotFoundException();
         }
 
-        return tokenService.permanent(ImmutableMap.of("username", device.getIdentity().getUsername()));
+        return tokenService.permanent(ImmutableMap.of("username", device.createIdentity().getUsername()));
     }
 
     public Identity findByToken(String token) throws IdentityNotFoundException {

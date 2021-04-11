@@ -38,7 +38,7 @@ public class AdminController {
         adminService.insert(admin);
 
         try {
-            identityService.insert(admin.getIdentity());
+            identityService.insert(admin.createIdentity());
         } catch (DatabaseException e) {
             JSONObject response = new JSONObject();
             response.put("message", e.getClass().getSimpleName());
