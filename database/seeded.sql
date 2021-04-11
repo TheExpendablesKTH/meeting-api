@@ -109,11 +109,12 @@ ALTER TABLE public.identities_id_seq OWNER TO postgres;
 CREATE TABLE public.identities (
     id integer DEFAULT nextval('public.identities_id_seq'::regclass) NOT NULL,
     type character varying NOT NULL,
+    residency_id integer NOT NULL,
     username character varying NOT NULL,
     password character varying,
     admin_id integer,
     device_id integer,
-    residency_id integer NOT NULL
+    resident_id integer
 );
 
 
@@ -222,7 +223,7 @@ COPY public.devices (id, residency_id) FROM stdin;
 -- Data for Name: identities; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.identities (id, type, username, password, admin_id, device_id, residency_id) FROM stdin;
+COPY public.identities (id, type, residency_id, username, password, admin_id, device_id, resident_id) FROM stdin;
 \.
 
 
@@ -261,7 +262,7 @@ SELECT pg_catalog.setval('public.devices_id_seq', 1, false);
 -- Name: identities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.identities_id_seq', 57, true);
+SELECT pg_catalog.setval('public.identities_id_seq', 1, false);
 
 
 --
@@ -275,7 +276,7 @@ SELECT pg_catalog.setval('public.residencies_id_seq', 1, false);
 -- Name: residents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.residents_id_seq', 9, true);
+SELECT pg_catalog.setval('public.residents_id_seq', 1, false);
 
 
 --
@@ -362,6 +363,14 @@ ALTER TABLE ONLY public.identities
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_residency_id_fkey FOREIGN KEY (residency_id) REFERENCES public.residencies(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: identities identities_resident_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.identities
+    ADD CONSTRAINT identities_resident_id_fkey FOREIGN KEY (resident_id) REFERENCES public.residents(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

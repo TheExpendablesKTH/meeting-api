@@ -109,11 +109,12 @@ ALTER TABLE public.identities_id_seq OWNER TO postgres;
 CREATE TABLE public.identities (
     id integer DEFAULT nextval('public.identities_id_seq'::regclass) NOT NULL,
     type character varying NOT NULL,
+    residency_id integer NOT NULL,
     username character varying NOT NULL,
     password character varying,
     admin_id integer,
     device_id integer,
-    residency_id integer NOT NULL
+    resident_id integer
 );
 
 
@@ -286,6 +287,14 @@ ALTER TABLE ONLY public.identities
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_residency_id_fkey FOREIGN KEY (residency_id) REFERENCES public.residencies(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: identities identities_resident_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.identities
+    ADD CONSTRAINT identities_resident_id_fkey FOREIGN KEY (resident_id) REFERENCES public.residents(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
