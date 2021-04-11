@@ -7,6 +7,7 @@ import com.doogod.video.meetingapi.db.models.Device;
 import com.doogod.video.meetingapi.db.models.Identity;
 import com.doogod.video.meetingapi.db.services.IdentityService;
 import com.doogod.video.meetingapi.db.services.ResidencyService;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import com.doogod.video.meetingapi.security.token.TokenService;
 import com.google.common.collect.ImmutableMap;
 import lombok.NonNull;
@@ -44,7 +45,7 @@ public final class AuthenticationService {
     public String login(Admin admin) throws IdentityNotFoundException {
         Identity fromDB = identityService.findByUsername(admin.createIdentity().getUsername());
         if (bcrypt.matches(admin.createIdentity().getPassword(), fromDB.getPassword())) {
-            return tokenService.permanent(ImmutableMap.of("username", fromDB.getUsername()));
+            return tokenService.permanent(admin);
         }
 
         // we shouldn't distinct between a password failure and identity not found,
@@ -59,7 +60,7 @@ public final class AuthenticationService {
             throw new IdentityNotFoundException();
         }
 
-        return tokenService.permanent(ImmutableMap.of("username", device.createIdentity().getUsername()));
+        return tokenService.permanent(device);
     }
 
     public Identity findByToken(String token) throws IdentityNotFoundException {
@@ -70,6 +71,17 @@ public final class AuthenticationService {
         Map<String, String> claims = tokenService.verify(token);
         String username = claims.get("username");
         return identityService.findByUsername(username);
+    }
+
+    public Permissions parsePermissions(String token) {
+        if (token.contains("Bearer ")) {
+            token = token.replace("Bearer ", "");
+        }
+
+        Map<String, String> claims = tokenService.verify(token);
+        String permissions = claims.get("permissions");
+
+        return Permissions.fromString(permissions);
     }
 
     public void logout(final Identity identity) {

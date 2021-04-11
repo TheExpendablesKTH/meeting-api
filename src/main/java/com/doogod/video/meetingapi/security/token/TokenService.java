@@ -1,5 +1,8 @@
 package com.doogod.video.meetingapi.security.token;
 
+import com.doogod.video.meetingapi.db.models.Identity;
+import com.doogod.video.meetingapi.security.authentication.Identifiable;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
@@ -42,11 +45,31 @@ public final class TokenService implements Clock {
         this.secretKey = BASE64.encode(requireNonNull(secret));
     }
 
-    public String permanent(final Map<String, String> attributes) {
+    public String permanent(Identifiable identifiable) {
+        Identity identity = identifiable.createIdentity();
+        Permissions permissions = identifiable.getPermissions();
+
+        Map<String, String> attributes = ImmutableMap.of(
+                "username",
+                identity.getUsername(),
+                "permissions",
+                permissions.toString()
+        );
+
         return newToken(attributes, 0);
     }
 
-    public String expiring(final Map<String, String> attributes) {
+    public String expiring(Identifiable identifiable) {
+        Identity identity = identifiable.createIdentity();
+        Permissions permissions = identifiable.getPermissions();
+
+        Map<String, String> attributes = ImmutableMap.of(
+                "username",
+                identity.getUsername(),
+                "permissions",
+                permissions.toString()
+        );
+
         return newToken(attributes, expirationSec);
     }
 
