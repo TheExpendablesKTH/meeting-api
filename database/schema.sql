@@ -112,7 +112,8 @@ CREATE TABLE public.identities (
     username character varying NOT NULL,
     password character varying,
     admin_id integer,
-    device_id integer
+    device_id integer,
+    residency_id integer NOT NULL
 );
 
 
@@ -277,6 +278,14 @@ ALTER TABLE ONLY public.identities
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_device_id_fkey FOREIGN KEY (device_id) REFERENCES public.devices(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: identities identities_residency_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.identities
+    ADD CONSTRAINT identities_residency_id_fkey FOREIGN KEY (residency_id) REFERENCES public.residencies(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

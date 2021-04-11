@@ -31,7 +31,7 @@ public class Device implements Identifiable {
         String now = df.format(new Date());
 
         String username = "device_created_at:" + now;
-        return new Identity(null, "device", username, null, null, this.id);
+        return new Identity(null, "device", this.residencyId, username, null, null, this.id);
     }
 
     @JsonIgnore

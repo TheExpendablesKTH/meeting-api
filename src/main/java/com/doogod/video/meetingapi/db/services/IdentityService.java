@@ -37,11 +37,12 @@ public class IdentityService {
     private void insertAdmin(Identity identity) throws DatabaseException {
         jdbi.withHandle(handle -> {
             try {
-                return handle.createUpdate("INSERT INTO identities(type, username, password, admin_id) values (:type, :username, :password, :admin_id);")
+                return handle.createUpdate("INSERT INTO identities(type, username, password, admin_id, residency_id) values (:type, :username, :password, :admin_id, :residency_id);")
                         .bind("type", identity.getType())
                         .bind("username", identity.getUsername())
                         .bind("password", bcrypt.encode(identity.getPassword()))
                         .bind("admin_id", identity.getAdminId())
+                        .bind("residency_id", identity.getResidencyId())
                         .registerRowMapper(ConstructorMapper.factory(Identity.class))
                         .executeAndReturnGeneratedKeys()
                         .mapTo(Identity.class)
@@ -58,10 +59,11 @@ public class IdentityService {
     private void insertDevice(Identity identity) throws DatabaseException {
         jdbi.withHandle(handle -> {
             try {
-                return handle.createUpdate("INSERT INTO identities(type, username, device_id) values (:type, :username, :device_id);")
+                return handle.createUpdate("INSERT INTO identities(type, username, device_id, residency_id) values (:type, :username, :device_id, :residency_id);")
                         .bind("type", identity.getType())
                         .bind("username", identity.getUsername())
                         .bind("device_id", identity.getDeviceId())
+                        .bind("residency_id", identity.getResidencyId())
                         .registerRowMapper(ConstructorMapper.factory(Identity.class))
                         .executeAndReturnGeneratedKeys()
                         .mapTo(Identity.class)

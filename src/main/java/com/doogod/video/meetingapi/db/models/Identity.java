@@ -23,16 +23,18 @@ import static lombok.AccessLevel.PRIVATE;
 public class Identity implements UserDetails {
     private Integer id;
     private String type;
+    private Integer residencyId;
     private String username;
     private String password;
     private Integer adminId;
     private Integer deviceId;
 
     @JsonCreator
-    public Identity(Integer id, String type, String username, String password, Integer adminId, Integer deviceId) {
+    public Identity(Integer id, String type, Integer residencyId, String username, String password, Integer adminId, Integer deviceId) {
         super();
         this.id = id;
         this.type = type;
+        this.residencyId = residencyId;
         this.username = requireNonNull(username);
         this.password = password;
         this.adminId = adminId;
@@ -50,16 +52,22 @@ public class Identity implements UserDetails {
         return type;
     }
 
-    @JSONPropertyIgnore
-    @JsonIgnore
-    @Override
-    public String getPassword() {
-        return password;
+    @JsonProperty("residency_id")
+    @JSONPropertyName("residency_id")
+    public Integer getResidencyId() {
+        return residencyId;
     }
 
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @JSONPropertyIgnore
+    @JsonIgnore
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @JsonProperty("identity_id")
