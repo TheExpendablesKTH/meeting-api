@@ -20,23 +20,31 @@ import static lombok.AccessLevel.PRIVATE;
 @Builder
 public class Identity implements UserDetails {
     private Integer id;
+    private String type;
     private String username;
     private String password;
     private Integer adminId;
+    private Integer deviceId;
 
     @JsonCreator
-    public Identity(Integer id, String username, String password, Integer adminId) {
+    public Identity(Integer id, String type, String username, String password, Integer adminId, Integer deviceId) {
         super();
         this.id = id;
+        this.type = type;
         this.username = requireNonNull(username);
-        this.password = requireNonNull(password);
+        this.password = password;
         this.adminId = adminId;
+        this.deviceId = deviceId;
     }
 
     @JsonIgnore
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
         return new ArrayList<>();
+    }
+
+    public String getType() {
+        return type;
     }
 
     @JsonIgnore
@@ -58,6 +66,11 @@ public class Identity implements UserDetails {
     @JsonIgnore
     public Integer getAdminId() {
         return adminId;
+    }
+
+    @JsonIgnore
+    public Integer getDeviceId() {
+        return deviceId;
     }
 
     @JsonIgnore
