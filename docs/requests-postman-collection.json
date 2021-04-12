@@ -251,15 +251,15 @@
       "name": "Admin",
       "item": [
         {
-          "name": "List users",
+          "name": "List residents",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "localhost:8080/users",
+              "raw": "localhost:8080/residents",
               "query": null,
               "protocol": null,
               "host": [
-                "localhost:8080/users"
+                "localhost:8080/residents"
               ],
               "port": null,
               "path": null
@@ -294,15 +294,15 @@
           "response": []
         },
         {
-          "name": "Create user",
+          "name": "Create resident",
           "request": {
             "method": "POST",
             "url": {
-              "raw": "localhost:8080/users",
+              "raw": "localhost:8080/residents",
               "query": null,
               "protocol": null,
               "host": [
-                "localhost:8080/users"
+                "localhost:8080/residents"
               ],
               "port": null,
               "path": null
@@ -325,7 +325,7 @@
             "body": {
               "mode": "raw",
               "disabled": false,
-              "raw": "{\n  \"firstname\": \"foo\",\n  \"lastname\": \"bar\"\n}"
+              "raw": "{\n  \"name\": \"asdf\"\n}"
             },
             "auth": null
           },
@@ -454,7 +454,7 @@
             "body": {
               "mode": "raw",
               "disabled": false,
-              "raw": "{\n  \"relative_id\": 3,\n}"
+              "raw": "{\n  \"phone\": ,\n}"
             },
             "auth": null
           },
