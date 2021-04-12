@@ -24,6 +24,15 @@ dependencies {
 	implementation 'org.jdbi:jdbi3-spring4:3.9.1'
 	implementation 'org.jdbi:jdbi3-sqlobject:3.9.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.projectlombok', name: 'lombok-maven', version: '1.18.20.0', ext: 'pom'
+	compile "org.springframework.boot:spring-boot-starter-security:2.4.4"
+	compile "org.projectlombok:lombok:1.18.20"
+	compile "org.apache.commons:commons-lang3:3.8.1"
+	compile "com.google.guava:guava:29.0-jre"
+	compile "io.jsonwebtoken:jjwt:0.9.1"
+	compile "joda-time:joda-time:2.10.6"
+	compile "jakarta.xml.bind:jakarta.xml.bind-api:2.3.3"
+	compile "org.glassfish.jaxb:jaxb-runtime:2.3.3"
 }
 
 test {

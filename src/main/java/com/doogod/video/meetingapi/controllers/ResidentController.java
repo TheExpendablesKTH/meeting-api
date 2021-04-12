@@ -1,7 +1,12 @@
 package com.doogod.video.meetingapi.controllers;
 
 
-import com.doogod.video.meetingapi.db.ResidentModel;
+import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
+import com.doogod.video.meetingapi.db.models.Identity;
+import com.doogod.video.meetingapi.db.models.Resident;
+import com.doogod.video.meetingapi.db.services.ResidentService;
+import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.ConstructorMapper;
 import org.json.JSONObject;
@@ -22,15 +27,28 @@ public class ResidentController {
     @Autowired
     Jdbi jdbi;
 
-    @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ResidentModel>> listUsers() {
-        List<ResidentModel> residents = jdbi.withHandle(handle -> handle.createQuery("SELECT id, name FROM residents;")
-                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
-                .mapTo(ResidentModel.class)
-                .list()
-        );
+    @Autowired
+    AuthenticationService authService;
 
-        return new ResponseEntity<List<ResidentModel>>(residents, HttpStatus.OK);
+    @Autowired
+    ResidentService residentService;
+
+    Permissions permissions;
+
+    Identity identity;
+
+    @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Resident>> listResidents(@RequestHeader("Authorization") String auth) throws IdentityNotFoundException {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_LIST_RESIDENTS)) {
+            return permissions.denied();
+        }
+
+        identity = authService.findByToken(auth);
+
+        List<Resident> residents = residentService.findByResidencyId(identity.getResidencyId());
+
+        return new ResponseEntity(residents, HttpStatus.OK);
     }
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,24 +57,26 @@ public class ResidentController {
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}
             )
-    public ResponseEntity<ResidentModel> createUser(@RequestBody ResidentModel resident) {
-        var newResident = jdbi.withHandle(handle -> handle.createUpdate("INSERT INTO residents(name) values (:name);")
-                .bind("name", resident.getName())
-                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
-                .executeAndReturnGeneratedKeys()
-                .mapTo(ResidentModel.class)
-                .one()
-        );
-        return new ResponseEntity<ResidentModel>(newResident, HttpStatus.OK);
+    public ResponseEntity<Resident> createResident(@RequestBody Resident resident, @RequestHeader("Authorization") String auth) throws IdentityNotFoundException {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_CREATE_RESIDENTS)) {
+            return permissions.denied();
+        }
+
+        identity = authService.findByToken(auth);
+        resident.setResidencyId(identity.getResidencyId());
+
+        residentService.insert(resident);
+        return new ResponseEntity<Resident>(resident, HttpStatus.OK);
     }
 
     @RequestMapping(path = "{residentId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteUser(@PathVariable("residentId") String residentId) {
-        var deletedResident = jdbi.withHandle(handle -> handle.createUpdate("DELETE FROM residents(name) WHERE id=:id")
+    public ResponseEntity<String> deleteUser(@PathVariable("residentId") Integer residentId) {
+        var deletedResident = jdbi.withHandle(handle -> handle.createUpdate("DELETE FROM residents WHERE id = :id;")
                 .bind("id", residentId)
-                .registerRowMapper(ConstructorMapper.factory(ResidentModel.class))
+                .registerRowMapper(ConstructorMapper.factory(Resident.class))
                 .executeAndReturnGeneratedKeys()
-                .mapTo(ResidentModel.class)
+                .mapTo(Resident.class)
                 .one()
         );
         JSONObject response = new JSONObject();

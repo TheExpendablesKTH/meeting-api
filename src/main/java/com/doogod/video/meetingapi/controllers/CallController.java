@@ -1,6 +1,9 @@
 package com.doogod.video.meetingapi.controllers;
 
+import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
+import com.doogod.video.meetingapi.security.permissions.Permissions;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +17,18 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class CallController {
 
+    @Autowired
+    AuthenticationService authService;
+
+    Permissions permissions;
+
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> listCalls() {
+    public ResponseEntity<String> listCalls(@RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_LIST_CALLS)) {
+            return permissions.denied();
+        }
+
         List<JSONObject> calls = new ArrayList<JSONObject>();
         JSONObject call1 = new JSONObject();
         call1.put("id", 1);
@@ -31,7 +44,12 @@ public class CallController {
     }
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createCall() {
+    public ResponseEntity<String> createCall(@RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_START_CALLS)) {
+            return permissions.denied();
+        }
+
         JSONObject connectionDetails = new JSONObject();
         connectionDetails.put("...", "...");
 
