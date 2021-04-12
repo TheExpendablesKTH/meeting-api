@@ -204,6 +204,82 @@ ALTER TABLE ONLY public.residencies ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Data for Name: admins; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.admins (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: devices; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.devices (id, residency_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: identities; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.identities (id, type, residency_id, username, password, admin_id, device_id, resident_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: residencies; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.residencies (id, name, device_passphrase) FROM stdin;
+1	nalens äldreboende	hemlis
+\.
+
+
+--
+-- Data for Name: residents; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.residents (id, name, residency_id) FROM stdin;
+\.
+
+
+--
+-- Name: admins_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.admins_id_seq', 1, false);
+
+
+--
+-- Name: devices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.devices_id_seq', 1, false);
+
+
+--
+-- Name: identities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.identities_id_seq', 1, false);
+
+
+--
+-- Name: residencies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.residencies_id_seq', 1, false);
+
+
+--
+-- Name: residents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.residents_id_seq', 1, false);
+
+
+--
 -- Name: admins admins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
