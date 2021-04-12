@@ -2,6 +2,7 @@ package com.doogod.video.meetingapi.controllers;
 
 
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
+import com.doogod.video.meetingapi.db.exceptions.ResidentNotFoundException;
 import com.doogod.video.meetingapi.db.models.Identity;
 import com.doogod.video.meetingapi.db.models.Resident;
 import com.doogod.video.meetingapi.db.services.ResidentService;
@@ -72,15 +73,20 @@ public class ResidentController {
 
     @RequestMapping(path = "{residentId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteUser(@PathVariable("residentId") Integer residentId) {
-        var deletedResident = jdbi.withHandle(handle -> handle.createUpdate("DELETE FROM residents WHERE id = :id;")
-                .bind("id", residentId)
-                .registerRowMapper(ConstructorMapper.factory(Resident.class))
-                .executeAndReturnGeneratedKeys()
-                .mapTo(Resident.class)
-                .one()
-        );
+        Resident resident;
+        try {
+            resident = residentService.findById(residentId);
+        } catch (ResidentNotFoundException e) {
+            JSONObject response = new JSONObject();
+            response.put("message", "resident not found");
+            return new ResponseEntity<String>(response.toString(), HttpStatus.NOT_FOUND);
+        }
+
+        residentService.delete(resident);
+
         JSONObject response = new JSONObject();
-        response.put("message", "resident \"" + deletedResident.getName() + "\" deleted");
+        response.put("message", "resident " + resident.getName() + " deleted");
+
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
     }
 
