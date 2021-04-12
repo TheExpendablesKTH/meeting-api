@@ -25,6 +25,8 @@ API for the meeting service from Dogood
         - [Create a resident](#create-a-resident)
       - [List stuff](#list-stuff)
         - [List residents](#list-residents)
+      - [Delete stuff](#delete-stuff)
+        - [Delete a resident](#delete-a-resident)
   - [Deployment](#deployment)
 ## Development
 
@@ -222,6 +224,16 @@ echo "$RESIDENT_ID"
 
 ```bash
 curl "http://localhost:8080/residents" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: $ADMIN_TOKEN" | jq
+```
+
+#### Delete stuff
+
+##### Delete a resident
+
+```bash
+curl -X DELETE "http://localhost:8080/residents/$RESIDENT_ID" \
      -H 'Content-Type: application/json' \
      -H "Authorization: $ADMIN_TOKEN" | jq
 ```
