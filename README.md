@@ -146,11 +146,25 @@ $ curl -X "POST" "http://localhost:8080/calls" \
 
 ### Full list
 
+Use either of the  following two commands to set the endpoint (which api to talk to).
+
+For the production api:
+
+```bash
+ENDPOINT=http://master.api.dd1369-meetings.com
+```
+
+If you are running the api locally:
+
+```bash
+ENDPOINT=http://localhost:8080
+```
+
 #### Authentication
 ##### Authenticate a device
 
 ```bash
-DEVICE_TOKEN=$(curl -X "POST" "http://localhost:8080/authenticate/device" \
+DEVICE_TOKEN=$(curl -X "POST" "$ENDPOINT/authenticate/device" \
      -H 'Content-Type: application/json' \
      -d $'{
   "passphrase": "hemlis"
@@ -161,7 +175,7 @@ echo "$DEVICE_TOKEN"
 ##### Get token for an admin
 
 ```bash
-ADMIN_TOKEN=$(curl -X "POST" "http://localhost:8080/authenticate/admin" \
+ADMIN_TOKEN=$(curl -X "POST" "$ENDPOINT/authenticate/admin" \
      -H 'Content-Type: application/json' \
      -H "Authorization: Bearer $DEVICE_TOKEN" \
      -d $'{
@@ -174,10 +188,10 @@ echo "$ADMIN_TOKEN"
 ##### Get token for a resident
 
 ```bash
-RESIDENT_TOKEN=$(curl -X "POST" "http://localhost:8080/authenticate/resident" \
+RESIDENT_TOKEN=$(curl -X "POST" "$ENDPOINT/authenticate/resident" \
      -H 'Content-Type: application/json' \
      -H "Authorization: Bearer $DEVICE_TOKEN" \
-     -d $"{
+     -d "{
   \"id\": $RESIDENT_ID
 }" | jq -r '.token')
 echo "$RESIDENT_TOKEN"
@@ -186,7 +200,7 @@ echo "$RESIDENT_TOKEN"
 ##### Check caller identity (useful for debug)
 
 ```bash
-curl "http://localhost:8080/me" \
+curl "$ENDPOINT/me" \
      -H 'Content-Type: application/json' \
      -H 'Authorization: Bearer some-token' | jq
 ```
@@ -196,7 +210,7 @@ curl "http://localhost:8080/me" \
 ##### Create an admin account
 
 ```bash
-curl -X "POST" "http://localhost:8080/admin" \
+curl -X "POST" "$ENDPOINT/admin" \
      -H 'Content-Type: application/json' \
      -H "Authorization: Bearer $DEVICE_TOKEN" \
      -d $'{
@@ -209,7 +223,7 @@ curl -X "POST" "http://localhost:8080/admin" \
 ##### Create a resident
 
 ```bash
-RESIDENT_ID=$(curl -X "POST" "http://localhost:8080/residents" \
+RESIDENT_ID=$(curl -X "POST" "$ENDPOINT/residents" \
      -H 'Content-Type: application/json' \
      -H "Authorization: Bearer $ADMIN_TOKEN" \
      -d $'{
@@ -223,7 +237,7 @@ echo "$RESIDENT_ID"
 ##### List residents
 
 ```bash
-curl "http://localhost:8080/residents" \
+curl "$ENDPOINT/residents" \
      -H 'Content-Type: application/json' \
      -H "Authorization: $ADMIN_TOKEN" | jq
 ```
@@ -233,7 +247,7 @@ curl "http://localhost:8080/residents" \
 ##### Delete a resident
 
 ```bash
-curl -X DELETE "http://localhost:8080/residents/$RESIDENT_ID" \
+curl -X DELETE "$ENDPOINT/residents/$RESIDENT_ID" \
      -H 'Content-Type: application/json' \
      -H "Authorization: $ADMIN_TOKEN" | jq
 ```
