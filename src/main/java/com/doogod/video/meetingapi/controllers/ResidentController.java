@@ -4,7 +4,9 @@ package com.doogod.video.meetingapi.controllers;
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
 import com.doogod.video.meetingapi.db.exceptions.ResidentNotFoundException;
 import com.doogod.video.meetingapi.db.models.Identity;
+import com.doogod.video.meetingapi.db.models.Relative;
 import com.doogod.video.meetingapi.db.models.Resident;
+import com.doogod.video.meetingapi.db.services.RelativeService;
 import com.doogod.video.meetingapi.db.services.ResidentService;
 import com.doogod.video.meetingapi.security.authentication.AuthenticationService;
 import com.doogod.video.meetingapi.security.permissions.Permissions;
@@ -33,6 +35,9 @@ public class ResidentController {
 
     @Autowired
     ResidentService residentService;
+
+    @Autowired
+    RelativeService relativeService;
 
     Permissions permissions;
 
@@ -91,36 +96,44 @@ public class ResidentController {
     }
 
     @RequestMapping(path = "{residentId}/relatives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> listRelatives(@PathVariable("residentId") String residentId) {
-        List<JSONObject> users = new ArrayList<JSONObject>();
-        JSONObject relative1 = new JSONObject();
-        relative1.put("id", 1);
-        relative1.put("phone", "+46...");
-        relative1.put("name", "some relative");
-        users.add(relative1);
+    public ResponseEntity<List<Relative>> listRelatives(@PathVariable("residentId") Integer residentId, @RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_LIST_RELATIVES)) {
+            return permissions.denied();
+        }
 
-        JSONObject response = new JSONObject();
-        response.put("message", "");
-        response.put("relatives", users);
-
-        return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+        try {
+            Resident resident = residentService.findById(residentId);
+            List<Relative> relatives = relativeService.findByResident(resident);
+            return new ResponseEntity(relatives, HttpStatus.OK);
+        } catch (ResidentNotFoundException e) {
+            return new ResponseEntity(new JSONObject().put("message", "resident not found").toString(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @RequestMapping(path = "{residentId}/relatives", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createRelative(@PathVariable("residentId") String residentId) {
-        JSONObject relative1 = new JSONObject();
-        relative1.put("id", 2);
-        relative1.put("name", "some user");
+    @PostMapping(
+            value = "/postbody",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}
+    )
+    public ResponseEntity<Relative> createRelative(@PathVariable("residentId") Integer residentId, @RequestBody Relative relative, @RequestHeader("Authorization") String auth) {
+        permissions = authService.parsePermissions(auth);
+        if (!permissions.contains(Permissions.CAN_CREATE_RELATIVES)) {
+            return permissions.denied();
+        }
 
-        JSONObject response = new JSONObject();
-        response.put("message", "relative created for user " + residentId);
-        response.put("relative", relative1);
-
-        return new ResponseEntity<String>(response.toString(), HttpStatus.CREATED);
+        try {
+            Resident resident = residentService.findById(residentId);
+            relativeService.insert(relative, resident);
+            return new ResponseEntity<Relative>(relative, HttpStatus.OK);
+        } catch (ResidentNotFoundException e) {
+            return new ResponseEntity(new JSONObject().put("message", "resident not found").toString(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @RequestMapping(path = "{residentId}/relatives/{relativeId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteUser(@PathVariable("residentId") String residentId, @PathVariable("relativeId") String relativeId) {
+    public ResponseEntity<String> deleteRelative(@PathVariable("residentId") String residentId, @PathVariable("relativeId") String relativeId) {
         JSONObject response = new JSONObject();
         response.put("message", "relative for user " + residentId + " with id " + relativeId + " deleted");
         return new ResponseEntity<String>(response.toString(), HttpStatus.OK);

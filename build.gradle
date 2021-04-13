@@ -33,6 +33,7 @@ dependencies {
 	compile "joda-time:joda-time:2.10.6"
 	compile "jakarta.xml.bind:jakarta.xml.bind-api:2.3.3"
 	compile "org.glassfish.jaxb:jaxb-runtime:2.3.3"
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-sns', version: '1.11.982'
 }
 
 test {
