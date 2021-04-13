@@ -23,8 +23,10 @@ API for the meeting service from Dogood
       - [Creating stuff](#creating-stuff)
         - [Create an admin account](#create-an-admin-account)
         - [Create a resident](#create-a-resident)
+        - [Create a relative](#create-a-relative)
       - [List stuff](#list-stuff)
         - [List residents](#list-residents)
+        - [List relatives of a resident](#list-relatives-of-a-resident)
       - [Delete stuff](#delete-stuff)
         - [Delete a resident](#delete-a-resident)
   - [Deployment](#deployment)
@@ -232,12 +234,37 @@ RESIDENT_ID=$(curl -X "POST" "$ENDPOINT/residents" \
 echo "$RESIDENT_ID"
 ```
 
+##### Create a relative
+
+```bash
+RESIDENT_PHONE=+46...
+```
+
+```bash
+RELATIVE_ID=$(curl -X "POST" "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $ADMIN_TOKEN" \
+     -d "{
+  \"name\": \"cool persons cooler relative\",
+  \"phone\": \"$RESIDENT_PHONE\"
+}" | jq -r '.id')
+echo "$RELATIVE_ID"
+```
+
 #### List stuff
 
 ##### List residents
 
 ```bash
 curl "$ENDPOINT/residents" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: $ADMIN_TOKEN" | jq
+```
+
+##### List relatives of a resident
+
+```bash
+curl "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
      -H 'Content-Type: application/json' \
      -H "Authorization: $ADMIN_TOKEN" | jq
 ```
