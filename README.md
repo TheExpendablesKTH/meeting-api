@@ -237,7 +237,7 @@ echo "$RESIDENT_ID"
 ##### Create a relative
 
 ```bash
-RESIDENT_PHONE=+46...
+RELATIVE_PHONE=+46...
 ```
 
 ```bash
@@ -246,7 +246,7 @@ RELATIVE_ID=$(curl -X "POST" "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
      -H "Authorization: Bearer $ADMIN_TOKEN" \
      -d "{
   \"name\": \"cool persons cooler relative\",
-  \"phone\": \"$RESIDENT_PHONE\"
+  \"phone\": \"$RELATIVE_PHONE\"
 }" | jq -r '.id')
 echo "$RELATIVE_ID"
 ```
