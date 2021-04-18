@@ -35,6 +35,8 @@ public class Admin implements Identifiable {
         var permissions = new Permissions();
         permissions.add(Permissions.CAN_LIST_RESIDENTS);
         permissions.add(Permissions.CAN_CREATE_RESIDENTS);
+        permissions.add(Permissions.CAN_CREATE_RELATIVES);
+        permissions.add(Permissions.CAN_LIST_RELATIVES);
         return permissions;
     }
 

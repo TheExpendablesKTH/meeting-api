@@ -45,6 +45,15 @@ public class RelativeService {
         return relatives;
     }
 
+    public Relative findById(Integer id) {
+        return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM relatives WHERE id = :id;")
+                .bind("id", id)
+                .registerRowMapper(ConstructorMapper.factory(Relative.class))
+                .mapTo(Relative.class)
+                .one()
+        );
+    }
+
     public void delete(Relative relative) {
         jdbi.withHandle(handle -> handle.createUpdate("DELETE FROM relatives WHERE id = :id")
                 .bind("id", relative.getId())
