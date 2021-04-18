@@ -16,6 +16,8 @@ public class Permissions {
     public static final Integer CAN_LOGIN_RESIDENTS = 5;
     public static final Integer CAN_LIST_CALLS = 6;
     public static final Integer CAN_START_CALLS = 7;
+    public static final Integer CAN_LIST_RELATIVES = 8;
+    public static final Integer CAN_CREATE_RELATIVES = 9;
 
     private ArrayList<Integer> permissions;
 
