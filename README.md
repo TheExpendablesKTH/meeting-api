@@ -33,6 +33,8 @@ API for the meeting service from Dogood
       - [Delete stuff](#delete-stuff)
         - [Delete a resident](#delete-a-resident)
   - [Deployment](#deployment)
+  - [Notes on AWS services](#notes-on-aws-services)
+    - [SNS](#sns)
 ## Development
 
 ### Building locally
@@ -317,3 +319,29 @@ curl -X DELETE "$ENDPOINT/residents/$RESIDENT_ID" \
 ## Deployment
 
 There is a simple deployment script `redeploy.sh` (that expects to run in a configured environment, this is not documented).
+
+## Notes on AWS services
+
+### SNS
+
+After a short while you'll typically run in to quota limits.
+
+> From cloudwatch logs:
+> ```json
+> {
+>     "notification": {
+>         "messageId": "9b47b5ee-e5db-54e6-a390-ed18d980e01f",
+>         "timestamp": "2021-04-18 13:54:35.51"
+>     },
+>     "delivery": {
+>         "destination": "+46...",
+>         "smsType": "Transactional",
+>         "providerResponse": "No quota left for account",
+>         "dwellTimeMs": 174
+>     },
+>     "status": "FAILURE"
+> }
+> ```
+
+
+SNS have a fairly small cap for number of text-messages you're allowed to send. Request an increase using [this form](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-sns-text-messaging) (see [this thread](https://forums.aws.amazon.com/thread.jspa?threadID=235977)).
