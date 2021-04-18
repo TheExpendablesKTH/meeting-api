@@ -24,9 +24,12 @@ API for the meeting service from Dogood
         - [Create an admin account](#create-an-admin-account)
         - [Create a resident](#create-a-resident)
         - [Create a relative](#create-a-relative)
-      - [List stuff](#list-stuff)
+        - [Create a call](#create-a-call)
+      - [Get stuff](#get-stuff)
         - [List residents](#list-residents)
         - [List relatives of a resident](#list-relatives-of-a-resident)
+        - [Get _"my call"_ as a `resident`](#get-my-call-as-a-resident)
+        - [Get _"my call"_ as a `relative`](#get-my-call-as-a-relative)
       - [Delete stuff](#delete-stuff)
         - [Delete a resident](#delete-a-resident)
   - [Deployment](#deployment)
@@ -251,7 +254,18 @@ RELATIVE_ID=$(curl -X "POST" "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
 echo "$RELATIVE_ID"
 ```
 
-#### List stuff
+##### Create a call
+
+```bash
+curl -X "POST" "$ENDPOINT/call" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $RESIDENT_TOKEN" \
+     -d "{
+  \"relatives\": [$RELATIVE_ID]
+}" | jq
+```
+
+#### Get stuff
 
 ##### List residents
 
@@ -267,6 +281,27 @@ curl "$ENDPOINT/residents" \
 curl "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
      -H 'Content-Type: application/json' \
      -H "Authorization: $ADMIN_TOKEN" | jq
+```
+
+##### Get _"my call"_ as a `resident`
+
+```bash
+curl "$ENDPOINT/call" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $RESIDENT_TOKEN" | jq
+```
+
+##### Get _"my call"_ as a `relative`
+
+The code a relative is sent
+
+```bash
+CODE=XXX-XXX
+```
+
+```bash
+curl "$ENDPOINT/call/relative/$CODE" \
+     -H 'Content-Type: application/json' | jq
 ```
 
 #### Delete stuff
