@@ -55,6 +55,120 @@ ALTER SEQUENCE public.admins_id_seq OWNED BY public.admins.id;
 
 
 --
+-- Name: calls_attendees; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.calls_attendees (
+    id integer NOT NULL,
+    call_id integer NOT NULL,
+    attendee_id character varying NOT NULL,
+    join_token character varying NOT NULL,
+    resident_id integer,
+    relative_id integer
+);
+
+
+ALTER TABLE public.calls_attendees OWNER TO postgres;
+
+--
+-- Name: call_attendees_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.call_attendees_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.call_attendees_id_seq OWNER TO postgres;
+
+--
+-- Name: call_attendees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.call_attendees_id_seq OWNED BY public.calls_attendees.id;
+
+
+--
+-- Name: calls; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.calls (
+    id integer NOT NULL,
+    meeting_id character varying NOT NULL,
+    audio_host_url character varying NOT NULL,
+    audio_fallback_url character varying NOT NULL,
+    screen_data_url character varying NOT NULL,
+    screen_sharing_url character varying NOT NULL,
+    screen_viewing_url character varying NOT NULL,
+    signaling_url character varying NOT NULL,
+    turn_control_url character varying NOT NULL
+);
+
+
+ALTER TABLE public.calls OWNER TO postgres;
+
+--
+-- Name: calls_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.calls_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.calls_id_seq OWNER TO postgres;
+
+--
+-- Name: calls_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.calls_id_seq OWNED BY public.calls.id;
+
+
+--
+-- Name: calls_invites; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.calls_invites (
+    id integer NOT NULL,
+    calls_attendees_id integer NOT NULL,
+    code character varying NOT NULL
+);
+
+
+ALTER TABLE public.calls_invites OWNER TO postgres;
+
+--
+-- Name: calls_invites_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.calls_invites_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.calls_invites_id_seq OWNER TO postgres;
+
+--
+-- Name: calls_invites_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.calls_invites_id_seq OWNED BY public.calls_invites.id;
+
+
+--
 -- Name: devices; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -119,6 +233,42 @@ CREATE TABLE public.identities (
 
 
 ALTER TABLE public.identities OWNER TO postgres;
+
+--
+-- Name: relatives; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.relatives (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    phone character varying NOT NULL,
+    resident_id integer NOT NULL
+);
+
+
+ALTER TABLE public.relatives OWNER TO postgres;
+
+--
+-- Name: relatives_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.relatives_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.relatives_id_seq OWNER TO postgres;
+
+--
+-- Name: relatives_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.relatives_id_seq OWNED BY public.relatives.id;
+
 
 --
 -- Name: residencies; Type: TABLE; Schema: public; Owner: postgres
@@ -190,10 +340,38 @@ ALTER TABLE ONLY public.admins ALTER COLUMN id SET DEFAULT nextval('public.admin
 
 
 --
+-- Name: calls id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls ALTER COLUMN id SET DEFAULT nextval('public.calls_id_seq'::regclass);
+
+
+--
+-- Name: calls_attendees id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_attendees ALTER COLUMN id SET DEFAULT nextval('public.call_attendees_id_seq'::regclass);
+
+
+--
+-- Name: calls_invites id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_invites ALTER COLUMN id SET DEFAULT nextval('public.calls_invites_id_seq'::regclass);
+
+
+--
 -- Name: devices id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.devices ALTER COLUMN id SET DEFAULT nextval('public.devices_id_seq'::regclass);
+
+
+--
+-- Name: relatives id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.relatives ALTER COLUMN id SET DEFAULT nextval('public.relatives_id_seq'::regclass);
 
 
 --
@@ -212,6 +390,30 @@ ALTER TABLE ONLY public.admins
 
 
 --
+-- Name: calls_attendees call_attendees_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_attendees
+    ADD CONSTRAINT call_attendees_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: calls_invites calls_invites_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_invites
+    ADD CONSTRAINT calls_invites_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: calls calls_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls
+    ADD CONSTRAINT calls_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: devices devices_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -225,6 +427,14 @@ ALTER TABLE ONLY public.devices
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: relatives relatives_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.relatives
+    ADD CONSTRAINT relatives_pkey PRIMARY KEY (id);
 
 
 --
@@ -255,6 +465,38 @@ CREATE UNIQUE INDEX identities_username_unique ON public.identities USING btree 
 --
 
 CREATE UNIQUE INDEX residencies_passphrase_unique ON public.residencies USING btree (device_passphrase);
+
+
+--
+-- Name: calls_attendees calls_attendees_call_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_attendees
+    ADD CONSTRAINT calls_attendees_call_id_fkey FOREIGN KEY (call_id) REFERENCES public.calls(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: calls_attendees calls_attendees_relative_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_attendees
+    ADD CONSTRAINT calls_attendees_relative_id_fkey FOREIGN KEY (relative_id) REFERENCES public.relatives(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: calls_attendees calls_attendees_resident_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_attendees
+    ADD CONSTRAINT calls_attendees_resident_id_fkey FOREIGN KEY (resident_id) REFERENCES public.residents(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: calls_invites calls_invites_calls_attendees_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.calls_invites
+    ADD CONSTRAINT calls_invites_calls_attendees_id_fkey FOREIGN KEY (calls_attendees_id) REFERENCES public.calls_attendees(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -295,6 +537,14 @@ ALTER TABLE ONLY public.identities
 
 ALTER TABLE ONLY public.identities
     ADD CONSTRAINT identities_resident_id_fkey FOREIGN KEY (resident_id) REFERENCES public.residents(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: relatives relatives_resident_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.relatives
+    ADD CONSTRAINT relatives_resident_id_fkey FOREIGN KEY (resident_id) REFERENCES public.residents(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

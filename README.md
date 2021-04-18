@@ -23,11 +23,18 @@ API for the meeting service from Dogood
       - [Creating stuff](#creating-stuff)
         - [Create an admin account](#create-an-admin-account)
         - [Create a resident](#create-a-resident)
-      - [List stuff](#list-stuff)
+        - [Create a relative](#create-a-relative)
+        - [Create a call](#create-a-call)
+      - [Get stuff](#get-stuff)
         - [List residents](#list-residents)
+        - [List relatives of a resident](#list-relatives-of-a-resident)
+        - [Get _"my call"_ as a `resident`](#get-my-call-as-a-resident)
+        - [Get _"my call"_ as a `relative`](#get-my-call-as-a-relative)
       - [Delete stuff](#delete-stuff)
         - [Delete a resident](#delete-a-resident)
   - [Deployment](#deployment)
+  - [Notes on AWS services](#notes-on-aws-services)
+    - [SNS](#sns)
 ## Development
 
 ### Building locally
@@ -232,7 +239,35 @@ RESIDENT_ID=$(curl -X "POST" "$ENDPOINT/residents" \
 echo "$RESIDENT_ID"
 ```
 
-#### List stuff
+##### Create a relative
+
+```bash
+RELATIVE_PHONE=+46...
+```
+
+```bash
+RELATIVE_ID=$(curl -X "POST" "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $ADMIN_TOKEN" \
+     -d "{
+  \"name\": \"cool persons cooler relative\",
+  \"phone\": \"$RELATIVE_PHONE\"
+}" | jq -r '.id')
+echo "$RELATIVE_ID"
+```
+
+##### Create a call
+
+```bash
+curl -X "POST" "$ENDPOINT/call" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $RESIDENT_TOKEN" \
+     -d "{
+  \"relatives\": [$RELATIVE_ID]
+}" | jq
+```
+
+#### Get stuff
 
 ##### List residents
 
@@ -240,6 +275,35 @@ echo "$RESIDENT_ID"
 curl "$ENDPOINT/residents" \
      -H 'Content-Type: application/json' \
      -H "Authorization: $ADMIN_TOKEN" | jq
+```
+
+##### List relatives of a resident
+
+```bash
+curl "$ENDPOINT/residents/$RESIDENT_ID/relatives" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: $ADMIN_TOKEN" | jq
+```
+
+##### Get _"my call"_ as a `resident`
+
+```bash
+curl "$ENDPOINT/call" \
+     -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $RESIDENT_TOKEN" | jq
+```
+
+##### Get _"my call"_ as a `relative`
+
+The code a relative is sent
+
+```bash
+CODE=XXX-XXX
+```
+
+```bash
+curl "$ENDPOINT/call/relative/$CODE" \
+     -H 'Content-Type: application/json' | jq
 ```
 
 #### Delete stuff
@@ -255,3 +319,29 @@ curl -X DELETE "$ENDPOINT/residents/$RESIDENT_ID" \
 ## Deployment
 
 There is a simple deployment script `redeploy.sh` (that expects to run in a configured environment, this is not documented).
+
+## Notes on AWS services
+
+### SNS
+
+After a short while you'll typically run in to quota limits.
+
+> From cloudwatch logs:
+> ```json
+> {
+>     "notification": {
+>         "messageId": "9b47b5ee-e5db-54e6-a390-ed18d980e01f",
+>         "timestamp": "2021-04-18 13:54:35.51"
+>     },
+>     "delivery": {
+>         "destination": "+46...",
+>         "smsType": "Transactional",
+>         "providerResponse": "No quota left for account",
+>         "dwellTimeMs": 174
+>     },
+>     "status": "FAILURE"
+> }
+> ```
+
+
+SNS have a fairly small cap for number of text-messages you're allowed to send. Request an increase using [this form](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-sns-text-messaging) (see [this thread](https://forums.aws.amazon.com/thread.jspa?threadID=235977)).
