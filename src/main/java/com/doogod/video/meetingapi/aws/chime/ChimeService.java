@@ -172,8 +172,7 @@ public class ChimeService {
         }
 
         for (Meeting meeting : meetings.getMeetings()) {
-            String src = meeting.getMeetingId();
-            if (src.equals(meetingId)) {
+            if (meeting.getMeetingId().equals(meetingId)) {
                 return;
             }
         }
