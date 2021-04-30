@@ -134,8 +134,25 @@ public class ResidentController {
 
     @RequestMapping(path = "{residentId}/relatives/{relativeId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteRelative(@PathVariable("residentId") String residentId, @PathVariable("relativeId") String relativeId) {
-        JSONObject response = new JSONObject();
-        response.put("message", "relative for user " + residentId + " with id " + relativeId + " deleted");
-        return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+        Relative relative;
+        relative = relativeService.findById(Integer.parseInt(relativeId));
+        Resident resident;
+        try {
+            resident = residentService.findById(Integer.parseInt(residentId));
+        } catch(ResidentNotFoundException e) {
+            return new ResponseEntity<String>(new JSONObject().put("message", "resident not found").toString(), HttpStatus.NOT_FOUND);
+        }
+        List<Relative> relatives = relativeService.findByResident(resident);
+        if(relatives.contains(relative)){
+            relativeService.delete(relative);
+            JSONObject response = new JSONObject();
+            response.put("message", "relative for user " + residentId + " with id " + relativeId + " deleted");
+            return new ResponseEntity<String>(response.toString(), HttpStatus.OK);
+        }
+        else{
+            JSONObject response = new JSONObject();
+            response.put("message", "relative not in users contacts");
+            return new ResponseEntity<String>(response.toString(), HttpStatus.NOT_FOUND);
+        }
     }
 }
