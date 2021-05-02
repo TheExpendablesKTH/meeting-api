@@ -1,6 +1,7 @@
 package com.doogod.video.meetingapi.db.services;
 
 import com.doogod.video.meetingapi.aws.sns.SMSSendingService;
+import com.doogod.video.meetingapi.db.exceptions.RelativeNotFoundException;
 import com.doogod.video.meetingapi.db.exceptions.ResidentNotFoundException;
 import com.doogod.video.meetingapi.db.models.Relative;
 import com.doogod.video.meetingapi.db.models.Resident;
@@ -41,17 +42,22 @@ public class RelativeService {
                 .registerRowMapper(ConstructorMapper.factory(Relative.class))
                 .mapTo(Relative.class)
                 .list()
-        );
+            );
         return relatives;
+
     }
 
-    public Relative findById(Integer id) {
-        return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM relatives WHERE id = :id;")
-                .bind("id", id)
-                .registerRowMapper(ConstructorMapper.factory(Relative.class))
-                .mapTo(Relative.class)
-                .one()
-        );
+    public Relative findById(Integer id) throws RelativeNotFoundException{
+        try {
+            return jdbi.withHandle(handle -> handle.createQuery("SELECT * FROM relatives WHERE id = :id;")
+                    .bind("id", id)
+                    .registerRowMapper(ConstructorMapper.factory(Relative.class))
+                    .mapTo(Relative.class)
+                    .one()
+            );
+        } catch(IllegalStateException e) {
+            throw new RelativeNotFoundException();
+        }
     }
 
     public void delete(Relative relative) {

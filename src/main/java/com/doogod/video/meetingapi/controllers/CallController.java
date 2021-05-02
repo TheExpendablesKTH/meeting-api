@@ -132,8 +132,12 @@ public class CallController {
             return new ResponseEntity(new JSONObject().put("message", "the requested call has expired").toString(), HttpStatus.GONE);
         }
 
-        Relative relative = relativeService.findById(callAttendee.getRelativeId());
-
+        Relative relative;
+        try {
+            relative = relativeService.findById(callAttendee.getRelativeId());
+        } catch (RelativeNotFoundException e){
+            return new ResponseEntity(new JSONObject().put("message", "relative not found").toString(), HttpStatus.NOT_FOUND);
+        }
         try {
             ChimeConnectionDetails connectionDetails = chimeService.getMeetingForRelative(relative);
             return new ResponseEntity(connectionDetails, HttpStatus.OK);

@@ -2,6 +2,7 @@ package com.doogod.video.meetingapi.controllers;
 
 
 import com.doogod.video.meetingapi.db.exceptions.IdentityNotFoundException;
+import com.doogod.video.meetingapi.db.exceptions.RelativeNotFoundException;
 import com.doogod.video.meetingapi.db.exceptions.ResidentNotFoundException;
 import com.doogod.video.meetingapi.db.models.Identity;
 import com.doogod.video.meetingapi.db.models.Relative;
@@ -134,8 +135,13 @@ public class ResidentController {
 
     @RequestMapping(path = "{residentId}/relatives/{relativeId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteRelative(@PathVariable("residentId") String residentId, @PathVariable("relativeId") String relativeId) {
+        // TODO: Add a authentication check to deleteRelative for security.
         Relative relative;
-        relative = relativeService.findById(Integer.parseInt(relativeId));
+        try {
+            relative = relativeService.findById(Integer.parseInt(relativeId));
+        } catch (RelativeNotFoundException e){
+            return new ResponseEntity<String>(new JSONObject().put("message", "relative not found").toString(), HttpStatus.NOT_FOUND);
+        }
         Resident resident;
         try {
             resident = residentService.findById(Integer.parseInt(residentId));
